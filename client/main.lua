@@ -1,11 +1,14 @@
 QBCore = exports['qb-core']:GetCoreObject() -- Used Globally
 inJail = false
 jailTime = 0
-currentJob = "electrician"
+currentJob = nil --"electrician" old code
 CellsBlip = nil
 TimeBlip = nil
 ShopBlip = nil
+WorkBlip = nil
 PlayerJob = {}
+
+local inRange = false
 
 -- Functions
 
@@ -36,7 +39,7 @@ local function CreateCellsBlip()
 	SetBlipAsShortRange(CellsBlip, true)
 	SetBlipColour(CellsBlip, 4)
 	BeginTextCommandSetBlipName("STRING")
-	AddTextComponentSubstringPlayerName("Cellen")
+	AddTextComponentSubstringPlayerName("Cells")
 	EndTextCommandSetBlipName(CellsBlip)
 
 	if TimeBlip ~= nil then
@@ -66,6 +69,21 @@ local function CreateCellsBlip()
 	BeginTextCommandSetBlipName("STRING")
 	AddTextComponentSubstringPlayerName("Canteen")
 	EndTextCommandSetBlipName(ShopBlip)
+
+	if WorkBlip ~= nil then
+		RemoveBlip(WorkBlip)
+	end
+	WorkBlip = AddBlipForCoord(Config.Locations["work"].coords.x, Config.Locations["work"].coords.y, Config.Locations["work"].coords.z)
+
+	SetBlipSprite (WorkBlip, 440)
+	SetBlipDisplay(WorkBlip, 4)
+	SetBlipScale  (WorkBlip, 0.5)
+	SetBlipAsShortRange(WorkBlip, true)
+	SetBlipColour(WorkBlip, 0)
+
+	BeginTextCommandSetBlipName("STRING")
+	AddTextComponentSubstringPlayerName("Prison Work")
+	EndTextCommandSetBlipName(WorkBlip)
 end
 
 -- Events
@@ -112,14 +130,16 @@ RegisterNetEvent('prison:client:Enter', function(time)
 
 	inJail = true
 	jailTime = time
-	currentJob = "electrician"
+	local randomJobIndex = math.random(1, #Config.PrisonJobs)
+   	local RandomJobSelection = Config.PrisonJobs[randomJobIndex].name
+	currentJob = RandomJobSelection --"electrician" old code
 	TriggerServerEvent("prison:server:SetJailStatus", jailTime)
 	TriggerServerEvent("prison:server:SaveJailItems", jailTime)
 	TriggerServerEvent("InteractSound_SV:PlayOnSource", "jail", 0.5)
 	CreateCellsBlip()
 	Wait(2000)
 	DoScreenFadeIn(1000)
-	QBCore.Functions.Notify( Lang:t("error.do_some_work", {currentjob = Config.Jobs[currentJob] }), "error")
+	QBCore.Functions.Notify( Lang:t("error.do_some_work", {currentjob = Config.PrisonJobs[randomJobIndex].label}), "error")
 end)
 
 RegisterNetEvent('prison:client:Leave', function()
@@ -138,6 +158,9 @@ RegisterNetEvent('prison:client:Leave', function()
 		TimeBlip = nil
 		RemoveBlip(ShopBlip)
 		ShopBlip = nil
+		RemoveBlip(WorkBlip)
+		WorkBlip = nil
+		currentJob = nil --"electrician" old code
 		QBCore.Functions.Notify(Lang:t("success.free_"))
 		DoScreenFadeOut(500)
 		while not IsScreenFadedOut() do
@@ -165,6 +188,8 @@ RegisterNetEvent('prison:client:UnjailPerson', function()
 		TimeBlip = nil
 		RemoveBlip(ShopBlip)
 		ShopBlip = nil
+		RemoveBlip(WorkBlip)
+		WorkBlip = nil
 		QBCore.Functions.Notify(Lang:t("success.free_"))
 		DoScreenFadeOut(500)
 		while not IsScreenFadedOut() do
@@ -176,6 +201,253 @@ RegisterNetEvent('prison:client:UnjailPerson', function()
 		DoScreenFadeIn(1000)
 	end
 end)
+
+--- Lifers Job Applying Menu future update once i build rep system/crafting and luck with loot table as well.
+
+--[[ ----- Prison Job Menu Trigger ---------------------
+
+RegisterNetEvent('qb-prison:client:jobMenu')
+AddEventHandler('qb-prison:client:jobMenu', function()
+    if inJail then
+        --print("In Jail Dummy")
+        createPrisonJobMenu()
+        exports['qb-menu']:openMenu(pjobMenu)
+    else
+        QBCore.Functions.Notify("You are not an Inmate", "error", 3500)
+    end
+end)
+
+------ Menu Structures ------
+
+function createPrisonJobMenu()
+    pjobMenu = {
+        {
+            isHeader = true,
+            header = 'Prison Work'
+        },
+        {
+            header = "Electrician",
+			txt = "Fix Electrical Boxes For A Time Reduction",
+			params = {
+                isServer = false,
+                event = "qb-prison:jobapplyElectrician",
+            }
+        },
+        {
+            header = "Cook",
+			txt = "Cook Food For A Time Reduction",
+			params = {
+                isServer = false,
+                event = "qb-prison:jobapplyCook",
+            }
+        },
+        {
+            header = "Janitor",
+			txt = "Clean Common Area For A Time Reduction",
+			params = {
+                isServer = false,
+                event = "qb-prison:jobapplyJanitor",
+            }
+        },
+        {
+            header = "Close Menu",
+			txt = "Close Menu",
+			params = {
+                isServer = false,
+                event = exports['qb-menu']:closeMenu(),
+            }
+        },
+    }
+    exports['qb-menu']:openMenu(pjobMenu)
+end
+
+RegisterNetEvent('qb-prison:jobapplyElectrician', function(args)
+	local pos = GetEntityCoords(PlayerPedId())
+	inRange = false
+
+	local dist = #(pos - vector3(Config.Locations["work"].coords.x, Config.Locations["work"].coords.y, Config.Locations["work"].coords.z))
+
+    if dist < 2 then
+		inRange = true
+        if inJail then
+			currentJob = "electrician" --"electrician" old code
+			print("job is electrician bishface")
+		else
+			QBCore.Functions.Notify('Job Not Available')
+			TriggerEvent('qb-prison:client:jobMenu')
+		end
+	else
+		QBCore.Functions.Notify('Not Close Enough To Pay Phone')
+	end
+
+	if not inRange then
+		Wait(1000)
+	end
+end)
+
+RegisterNetEvent('qb-prison:jobapplyCook', function(args)
+	local pos = GetEntityCoords(PlayerPedId())
+	inRange = false
+
+	local dist = #(pos - vector3(Config.Locations["work"].coords.x, Config.Locations["work"].coords.y, Config.Locations["work"].coords.z))
+
+    if dist < 2 then
+		inRange = true
+        if inJail then
+			currentJob = "cook" --"electrician" old code
+			print("job is cook bishface")
+		else
+			QBCore.Functions.Notify('Job Not Available')
+			TriggerEvent('qb-prison:client:jobMenu')
+		end
+	else
+		QBCore.Functions.Notify('Not Close Enough To Pay Phone')
+	end
+
+	if not inRange then
+		Wait(1000)
+	end
+end)
+
+RegisterNetEvent('qb-prison:jobapplyJanitor', function(args)
+	local pos = GetEntityCoords(PlayerPedId())
+	inRange = false
+
+	local dist = #(pos - vector3(Config.Locations["work"].coords.x, Config.Locations["work"].coords.y, Config.Locations["work"].coords.z))
+
+    if dist < 2 then
+		inRange = true
+        if inJail then
+			currentJob = "janitor" --"electrician" old code
+			print("job is janitor bishface")
+		else
+			QBCore.Functions.Notify('Job Not Available')
+			TriggerEvent('qb-prison:client:jobMenu')
+		end
+	else
+		QBCore.Functions.Notify('Not Close Enough To Pay Phone')
+	end
+
+	if not inRange then
+		Wait(1000)
+	end
+end) ]]--
+
+RegisterNetEvent('qb-prison:client:checkTime', function()
+	if LocalPlayer.state.isLoggedIn then
+		if inJail then
+			local pos = GetEntityCoords(PlayerPedId())
+			if #(pos - vector3(Config.Locations["freedom"].coords.x, Config.Locations["freedom"].coords.y, Config.Locations["freedom"].coords.z)) < 1.5 then
+				TriggerEvent("prison:client:Leave")
+			end
+		end
+	end
+end)
+
+
+RegisterNetEvent('qb-prison:client:useCanteen', function()
+	if LocalPlayer.state.isLoggedIn then
+		if inJail then
+			local ShopItems = {}
+			ShopItems.label = "Prison Canteen"
+			ShopItems.items = Config.CanteenItems
+			ShopItems.slots = #Config.CanteenItems
+			TriggerServerEvent("inventory:server:OpenInventory", "shop", "Canteenshop_"..math.random(1, 99), ShopItems)
+		else
+			QBCore.Functions.Notify("You are not in Jail..", "error")
+		end
+	else
+		Wait(5000)
+	end
+end)
+RegisterNetEvent('qb-prison:client:slushy', function()
+    Citizen.Wait(1000)
+    local ped = PlayerPedId()
+    local seconds = math.random(12,20)
+    local circles = math.random(4,8)
+    local success = exports['qb-lock']:StartLockPickCircle(circles, seconds, success)
+    if success then
+        TriggerServerEvent("InteractSound_SV:PlayOnSource", "pour-drink", 0.1)
+        TaskStartScenarioInPlace(ped, "WORLD_HUMAN_HANG_OUT_STREET", 0, true)
+        QBCore.Functions.Progressbar("hospital_waiting", "Making a Good Slushy...", 10000, false, true, {
+            disableMovement = false,
+            disableCarMovement = true,
+            disableMouse = false,
+            disableCombat = true,
+        }, {}, {}, {}, function() -- Done
+            TriggerServerEvent('qb-prison:slushy:GiveItem')
+            ClearPedTasks(PlayerPedId())
+        end, function() -- Cancel
+            QBCore.Functions.Notify("Failed...", "error")
+            ClearPedTasks(PlayerPedId())
+        end)
+    else
+        QBCore.Functions.Notify("You Failed making a Slushy..", "error")
+        ClearPedTasks(PlayerPedId())
+    end
+end)
+
+exports['qb-target']:AddBoxZone("makeslushy", vector3(1777.66, 2560.07, 45.67), 0.6, 0.6, {
+    name="makeslushy",
+    heading=0,
+    --debugPoly=true,
+    minZ=45.67,
+    maxZ=46.67,
+    }, {
+        options = {
+            {
+                type = "client",
+                event = "qb-prison:client:slushy",
+                icon = "fas fa-wine-bottle",
+                label = "Make Slushy",
+            },
+        },
+        distance = 2.5
+})
+
+---Check Prison Time
+
+exports['qb-target']:AddBoxZone("checktime", vector3(1827.3, 2587.72, 46.01), 0.45, 0.55, {
+    name="checktime",
+    heading=0,
+    --debugPoly=true,
+    minZ=46.11,
+    maxZ=47.01,
+    }, {
+        options = {
+            {
+                type = "client",
+                event = "qb-prison:client:checkTime",
+                icon = "fas fa-user-clock",
+                label = "Check Jail Time",
+            },
+        },
+        distance = 2.5
+})
+
+
+---Check Prison Time
+
+exports['qb-target']:AddBoxZone("prisoncanteen", vector3(1783.12, 2559.56, 45.67), 0.4, 0.55, {
+    name="prisoncanteen",
+    heading=0,
+    --debugPoly=true,
+    minZ=45.62,
+    maxZ=46.07,
+    }, {
+        options = {
+            {
+                type = "client",
+                event = "qb-prison:client:useCanteen",
+                icon = "fas fa-utensils",
+                label = "Open Canteen",
+            },
+        },
+        distance = 2.5
+})
+
+
+---------------------------------------------------
 
 -- Threads
 
@@ -199,40 +471,3 @@ CreateThread(function()
 	end
 end)
 
-CreateThread(function()
-	while true do
-		Wait(1)
-		if LocalPlayer.state.isLoggedIn then
-			if inJail then
-				local pos = GetEntityCoords(PlayerPedId())
-				if #(pos - vector3(Config.Locations["freedom"].coords.x, Config.Locations["freedom"].coords.y, Config.Locations["freedom"].coords.z)) < 1.5 then
-					DrawText3D(Config.Locations["freedom"].coords.x, Config.Locations["freedom"].coords.y, Config.Locations["freedom"].coords.z, "~g~E~w~ - Check time")
-					if IsControlJustReleased(0, 38) then
-						TriggerEvent("prison:client:Leave")
-					end
-				elseif #(pos - vector3(Config.Locations["freedom"].coords.x, Config.Locations["freedom"].coords.y, Config.Locations["freedom"].coords.z)) < 2.5 then
-					DrawText3D(Config.Locations["freedom"].coords.x, Config.Locations["freedom"].coords.y, Config.Locations["freedom"].coords.z, "Check time")
-				end
-
-				if #(pos - vector3(Config.Locations["shop"].coords.x, Config.Locations["shop"].coords.y, Config.Locations["shop"].coords.z)) < 1.5 then
-					DrawText3D(Config.Locations["shop"].coords.x, Config.Locations["shop"].coords.y, Config.Locations["shop"].coords.z, "~g~E~w~ - Canteen")
-					if IsControlJustReleased(0, 38) then
-                        local ShopItems = {}
-                        ShopItems.label = "Prison Canteen"
-                        ShopItems.items = Config.CanteenItems
-                        ShopItems.slots = #Config.CanteenItems
-                        TriggerServerEvent("inventory:server:OpenInventory", "shop", "Canteenshop_"..math.random(1, 99), ShopItems)
-					end
-					DrawMarker(2, Config.Locations["shop"].coords.x, Config.Locations["shop"].coords.y, Config.Locations["shop"].coords.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.3, 0.2, 255, 55, 22, 222, false, false, false, 1, false, false, false)
-				elseif #(pos - vector3(Config.Locations["shop"].coords.x, Config.Locations["shop"].coords.y, Config.Locations["shop"].coords.z)) < 2.5 then
-					DrawText3D(Config.Locations["shop"].coords.x, Config.Locations["shop"].coords.y, Config.Locations["shop"].coords.z, "Canteen")
-					DrawMarker(2, Config.Locations["shop"].coords.x, Config.Locations["shop"].coords.y, Config.Locations["shop"].coords.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.3, 0.2, 255, 55, 22, 222, false, false, false, 1, false, false, false)
-				elseif #(pos - vector3(Config.Locations["shop"].coords.x, Config.Locations["shop"].coords.y, Config.Locations["shop"].coords.z)) < 10 then
-					DrawMarker(2, Config.Locations["shop"].coords.x, Config.Locations["shop"].coords.y, Config.Locations["shop"].coords.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.3, 0.2, 255, 55, 22, 222, false, false, false, 1, false, false, false)
-				end
-			end
-		else
-			Wait(5000)
-		end
-	end
-end)
