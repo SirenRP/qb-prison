@@ -1,5 +1,5 @@
 # qb-prison
-Prison/Jailing Script for QB-Policejob
+Updated Prison Script for QB-Policejob modified
 
 (v1.0.0) qb-prison - Added Multiple prison jobs w/ animation tasks to lower sentencing time, qb targeting system of canteen, slushy, time check.
 
