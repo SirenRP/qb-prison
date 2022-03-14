@@ -1,8 +1,27 @@
 Config = {}
 
 Config.Jobs = {
-    ["electrician"] = "Electrician"
+    ["electrician"] = "Electrician",
+    ["cook"] = "Cook",
+    ["janitor"] = "Janitor",
 }
+
+Config.PrisonJobs = {
+    [1] = {
+        name = "electrician",
+        label = "Prison Electrician",
+    },
+    [2] = {
+        name = "cook",
+        label = "Prison Cook",
+    },
+    [3] = {
+        name = "janitor",
+        label = "Prison Janitor",
+    },
+}
+
+Config.PrisonWage = 10
 
 Config.Locations = {
     jobs = {
@@ -28,10 +47,50 @@ Config.Locations = {
             [7] = {
                 coords = vector4(1625.1, 2575.988, 45.56, 272.249)
             }
-        }
+        },
+        ["cook"] = {
+            [1] = {
+                coords = vector4(1780.85, 2564.29, 45.67, 4.85),
+            },
+            [2] = {
+                coords = vector4(1777.57, 2561.91, 45.67, 92.91),
+            },
+            [3] = {
+                coords = vector4(1784.56, 2564.17, 45.67, 355.81),
+            },
+            [4] = {
+                coords = vector4(1786.54, 2564.33, 45.67, 356.82),
+            },
+            [5] = {
+                coords = vector4(1780.19, 2560.78, 45.67, 180.96),
+            },
+        },
+        ["janitor"] = {
+            [1] = {
+                coords = vector4(1758.37, 2566.15, 45.55, 102.74),
+            },
+            [2] = {
+                coords = vector4(1756.89, 2514.18, 45.55, 128.11),
+            },
+            [3] = {
+                coords = vector4(1737.23, 2543.75, 45.55, 347.52),
+            },
+            [4] = {
+                coords = vector4(1683.65, 2565.2, 45.55, 220.94),
+            },
+            [5] = {
+                coords = vector4(1635.25, 2502.33, 45.55, 314.76),
+            },
+            [6] = {
+                coords = vector4(1655.69, 2527.02, 45.55, 325.87),
+            },
+            [7] = {
+                coords = vector4(1655.58, 2540.84, 45.55, 57.73),
+            },
+        },
     },
     ["freedom"] = {
-        coords = vector4(1836.37, 2585.33, 45.89, 272.96)
+        coords = vector4(1827.3, 2587.72, 46.01, 91.44)
     },
     ["outside"] = {
         coords = vector4(1848.13, 2586.05, 45.67, 269.5)
@@ -44,6 +103,9 @@ Config.Locations = {
     },
     ["shop"] = {
         coords = vector4(1786.19, 2557.77, 45.62, 0.5)
+    },
+    ["work"] = {
+        coords = vector4(1828.83, 2580.21, 46.01, 0.5) --coords = vector3(1828.83, 2580.21, 46.01),
     },
     spawns = {
         [1] = {
