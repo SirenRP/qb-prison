@@ -1,6 +1,43 @@
 # qb-prison
 Prison/Jailing Script for QB-Policejob
 
+(v1.0.0) qb-prison - Added Multiple prison jobs w/ animation tasks to lower sentencing time, qb targeting system of canteen, slushy, time check.
+
+# Just Added
+- qb-targeting for time checks, shop canteen
+- slushy system functions & targeting by Primal#4155 (you will need to add "slushy" as an item i dont have a provided image.
+- Added 2 new job to the stock "electrician" job now there is "electrician", "cook", and "janitor" that once sentenced inmate will have randomly chosen for him.
+
+-----------------------------------------------------------------------------------------------------------------
+
+## Please note
+
+- I am trying to enhance this resource more and will build a lifer style "job system" that will be require prison rep meta for a new prison system.
+
+- If you have issues just put in a issue on my github.
+
+- This Script was tested on the latest build as of 03/10/2021.
+
+-----------------------------------------------------------------------------------------------------------------
+
+`Known Bugs`
+
+N/A
+
+-----------------------------------------------------------------------------------------------------------------
+
+## Plans to be added in the near future - 
+`lifer job crafting and rep system`
+
+-----------------------------------------------------------------------------------------------------------------
+
+## Dependancies
+
+- qb-target
+- qb-lock (for slushy & eventually all tasks will require (success) in order to get next blimp)
+
+-----------------------------------------------------------------------------------------------------------------
+
 # License
 
     QBCore Framework
