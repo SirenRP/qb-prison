@@ -25,6 +25,12 @@ RegisterNetEvent('prison:server:SaveJailItems', function()
     end
 end)
 
+RegisterNetEvent('qb-prison:server:getCommissary', function()
+    local src = source
+    local Player = QBCore.Functions.GetPlayer(src)
+    Player.Functions.AddMoney('cash', 5)
+end)
+
 RegisterNetEvent('prison:server:GiveJailItems', function()
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
@@ -127,10 +133,3 @@ AddEventHandler('qb-prison:server:prisonwork', function(job)
     Player.Functions.SetJob(job, 0)
     TriggerClientEvent('QBCore:Notify', src, 'Congratulations with your new job! ('..JobInfo.label..')')
 end) ]]--
-
-RegisterNetEvent('prison:slushy:GiveItem', function()
-    local src = source
-    local Player = QBCore.Functions.GetPlayer(src)
-    Player.Functions.AddItem("slushy", 1, false)
-    TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items["slushy"], "add")
-end)
