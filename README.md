@@ -12,9 +12,9 @@ Updated Prison Script for QB-Policejob modified
 
 ## Please note
 
-- I am trying to enhance this resource more and will build a lifer style "job system" that will be require prison rep meta for a new prison system.
+- I am trying to enhance this resource more and will build a prison lifer style "job system" that will require a new prison rep system for crafting new items, gaining pay increases, etc.
 
-- If you have issues just put in a issue on my github.
+- If you have issues with the resource just put in an issue on my github.
 
 - This Script was tested on the latest build as of 03/10/2021.
 
@@ -22,12 +22,14 @@ Updated Prison Script for QB-Policejob modified
 
 `Known Bugs`
 
-N/A
+The qb-menu job change system - DOES NOT Work currently its part of the lifer update (next release)
 
 -----------------------------------------------------------------------------------------------------------------
 
-## Plans to be added in the near future - 
-`lifer job crafting and rep system`
+## Plans to be added in future update - 
+`prison lifer job`
+`prison crafting and rep system`
+`new items & recipes for crafting`
 
 -----------------------------------------------------------------------------------------------------------------
 
