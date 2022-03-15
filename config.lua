@@ -173,3 +173,14 @@ Config.CanteenItems = {
         slot = 2
     }
 }
+
+Config.SlushyItems = {
+    [1] = {
+        name = "slushy",
+        price = 35,
+        amount = 1,
+        info = {},
+        type = "item",
+        slot = 1
+    },
+}
