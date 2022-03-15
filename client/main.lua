@@ -360,34 +360,56 @@ RegisterNetEvent('qb-prison:client:useCanteen', function()
 		Wait(5000)
 	end
 end)
+
 RegisterNetEvent('qb-prison:client:slushy', function()
-    Citizen.Wait(1000)
-    local ped = PlayerPedId()
-    local seconds = math.random(12,20)
-    local circles = math.random(4,8)
-    local success = exports['qb-lock']:StartLockPickCircle(circles, seconds, success)
-    if success then
-        TriggerServerEvent("InteractSound_SV:PlayOnSource", "pour-drink", 0.1)
-        TaskStartScenarioInPlace(ped, "WORLD_HUMAN_HANG_OUT_STREET", 0, true)
-        QBCore.Functions.Progressbar("hospital_waiting", "Making a Good Slushy...", 10000, false, true, {
-            disableMovement = false,
-            disableCarMovement = true,
-            disableMouse = false,
-            disableCombat = true,
-        }, {}, {}, {}, function() -- Done
-            TriggerServerEvent('qb-prison:slushy:GiveItem')
-            ClearPedTasks(PlayerPedId())
-        end, function() -- Cancel
-            QBCore.Functions.Notify("Failed...", "error")
-            ClearPedTasks(PlayerPedId())
-        end)
-    else
-        QBCore.Functions.Notify("You Failed making a Slushy..", "error")
-        ClearPedTasks(PlayerPedId())
-    end
+	if LocalPlayer.state.isLoggedIn then
+		if inJail then
+			Citizen.Wait(1000)
+			local ped = PlayerPedId()
+			local seconds = math.random(12,20)
+			local circles = math.random(4,8)
+			local success = exports['qb-lock']:StartLockPickCircle(circles, seconds, success)
+			if success then
+				TriggerServerEvent("InteractSound_SV:PlayOnSource", "pour-drink", 0.1)
+				TaskStartScenarioInPlace(ped, "WORLD_HUMAN_HANG_OUT_STREET", 0, true)
+				QBCore.Functions.Progressbar("hospital_waiting", "Making a Good Slushy...", 10000, false, true, {
+					disableMovement = false,
+					disableCarMovement = true,
+					disableMouse = false,
+					disableCombat = true,
+				}, {}, {}, {}, function() -- Done
+					SlushyTime(success)
+					ClearPedTasks(PlayerPedId())
+				end, function() -- Cancel
+					QBCore.Functions.Notify("Failed...", "error")
+					ClearPedTasks(PlayerPedId())
+				end)
+			else
+				QBCore.Functions.Notify("You Failed making a Slushy..", "error")
+				ClearPedTasks(PlayerPedId())
+			end
+		else
+			QBCore.Functions.Notify("You are not in Jail..", "error")
+		end
+	else
+		Wait(5000)
+	end
 end)
 
-exports['qb-target']:AddBoxZone("makeslushy", vector3(1777.66, 2560.07, 45.67), 0.6, 0.6, {
+function SlushyTime(success)
+	if success then
+		local SlushyItems = {}
+			SlushyItems.label = "Prison Slushy"
+			SlushyItems.items = Config.SlushyItems
+			SlushyItems.slots = #Config.SlushyItems
+			TriggerServerEvent("inventory:server:OpenInventory", "shop", "Slushyshop_"..math.random(1, 99), SlushyItems)
+	else
+		QBCore.Functions.Notify("Slushy Machine is Broken", "error")
+	end
+
+end
+
+--[[exports['qb-target']:AddBoxZone("makeslushy", vector3(1777.66, 2560.07, 45.67), 0.6, 0.6, {
     name="makeslushy",
     heading=0,
     --debugPoly=true,
@@ -444,7 +466,7 @@ exports['qb-target']:AddBoxZone("prisoncanteen", vector3(1783.12, 2559.56, 45.67
             },
         },
         distance = 2.5
-})
+})]]--
 
 
 ---------------------------------------------------
