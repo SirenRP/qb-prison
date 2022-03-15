@@ -18,7 +18,7 @@ Updated Prison Script for QB-Policejob modified
 
 - This Script was tested on the latest build as of 03/10/2021.
 
-##Add to qb-target/init.lua
+## Add to qb-target/init.lua
 
 ```Config.BoxZones = {
     ["prisonslushy"] = {
