@@ -4,7 +4,7 @@ Updated Prison Script for QB-Policejob modified
 (v1.0.0) qb-prison - Added Multiple prison jobs w/ animation tasks to lower sentencing time, qb targeting system of canteen, slushy, time check.
 
 # Just Added
-- qb-targeting for time checks, shop canteen
+- qb-targeting for time checks, shop canteen ........
 - slushy system functions & targeting by Primal#4155 (you will need to add "slushy" as an item i dont have a provided image.
 - Added 2 new job to the stock "electrician" job now there is "electrician", "cook", and "janitor" that once sentenced inmate will have randomly chosen for him.
 
